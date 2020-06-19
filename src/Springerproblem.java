@@ -8,7 +8,13 @@ public class Springerproblem {
      * The size of the playground.
      */
     private int fieldSize;
+    /**
+     * The start position field.
+     */
     private Field startPosfield;
+    /**
+     * The solution typ classic or simple.
+     */
     private int solutionType;
     /**
      * The Set of solutions, with all the possible solutions.
@@ -35,16 +41,16 @@ public class Springerproblem {
 
     /**
      * The constructor of the Springerproblem.
-     * Used to create a playground, the corresponding Fields and initialise the variables.
+     * Used to create a playground, the corresponding Fields and initialise the variables, and to choose the solution typ
      *
      * @param fieldSize chess board size
      * @param solutionAmount how much solutions that the user want
-     * @param solutionType if the user need the all solutions or some known.
+     * @param solutionTyp if the user need the all solutions or some known.
      */
-    public Springerproblem(int fieldSize, int solutionAmount,int solutionType) {
+    public Springerproblem(int fieldSize, int solutionAmount,int solutionTyp) {
         this.fieldSize = fieldSize;
         this.solutionAmount = solutionAmount;
-        this.solutionType = solutionType;
+        this.solutionType = solutionTyp;
 
         this.moveNumber = 0;
         this.currentPath = new ArrayList<>();
@@ -71,15 +77,15 @@ public class Springerproblem {
      */
     public void start(char column, int row, Version version) {
         Field startField;
-        startPosfield = getField(column, row);
-        if ((startField = this.getField(column, row)) == null) {
+        startPosfield = getFieldFromChar(column, row);
+        if ((startField = this.getFieldFromChar(column, row)) == null) {
             System.err.println("The StartField " + column + row + " doesn't exist. Please choose different.");
             System.exit(1);
         }
         if (version.equals(Version.S)) {
             this.findWayEasy(startField);
         } else if (version.equals(Version.C)) {
-            this.findWayNormal(startField);
+            this.findWayClassic(startField);
         }
         if(solutions.size() < solutionAmount && solutionType == 1){
           printSolutions(solutionAmount , solutionType);
@@ -122,16 +128,22 @@ public class Springerproblem {
     private List<Field> getPossibleMoves(Field field) {
         List<Field> result = new ArrayList<>();
         int relativeIndices[][] = {{-1, -2}, {1, -2}, {2, -1}, {1, 2}, {2, 1}, {-1, 2}, {-2, 1}, {-2, -1}};
-        for (int[] delta : relativeIndices) {
-            if (getField(field.getX() + delta[0], field.getY() + delta[1]) != null) {
-                if (!(getField(field.getX() + delta[0], field.getY() + delta[1]).isVisited())) {
-                    result.add(getField(field.getX() + delta[0], field.getY() + delta[1]));
+        for (int[] way : relativeIndices) {
+            if (getField(field.getX() + way[0], field.getY() + way[1]) != null) {
+                if (!(getField(field.getX() + way[0], field.getY() + way[1]).isVisited())) {
+                    result.add(getField(field.getX() + way[0], field.getY() + way[1]));
                 }
             }
         }
         return result;
     }
 
+    /**
+     * Used to get all possible moves from a position to get back to start position.
+     *
+     * @param field
+     * @return List<Field>
+     */
     private List<Field> getPossibleBack(Field field) {
         List<Field> result = new ArrayList<>();
         int relativeIndices[][] = {{-1, -2}, {1, -2}, {2, -1}, {2, 1}, {1, 2}, {-1, 2}, {-2, 1}, {-2, -1}};
@@ -156,7 +168,7 @@ public class Springerproblem {
         }
         this.currentPath.add(currentField);
         currentField.markAsVisited();
-        if (this.hasSolutionEasy() && filterSulotion(this.currentPath, startPosfield)) {
+        if (this.hasSolutionSimple() && filterSulotion(this.currentPath, startPosfield)) {
             List<Field> copy = new ArrayList<>(this.currentPath);
 
          this.solutions.add(copy);
@@ -188,11 +200,11 @@ public class Springerproblem {
      *
      * @param currentField
      */
-    private void findWayNormal(Field currentField) {
+    private void findWayClassic(Field currentField) {
         this.moveNumber++;
         this.currentPath.add(currentField);
         currentField.markAsVisited();
-        if (this.hasSolutionNormal()) {
+        if (this.hasSolutionClassic()) {
             if (filterSulotion(this.currentPath, startPosfield)) {
                 List<Field> copy = new ArrayList<>(this.currentPath);
 
@@ -207,7 +219,7 @@ public class Springerproblem {
         } else {
             List<Field> possibleMoves = this.getPossibleMoves(currentField);
             for (Field newField : possibleMoves) {
-                this.findWayNormal(newField);
+                this.findWayClassic(newField);
             }
         }
         this.moveNumber--;
@@ -220,8 +232,8 @@ public class Springerproblem {
      *
      * @return
      */
-    private boolean hasSolutionNormal() {
-        return moveNumber >= this.getFieldSize() * this.getFieldSize();
+    private boolean hasSolutionClassic() {
+        return moveNumber == this.getFieldSize() * this.getFieldSize();
     }
 
     /**
@@ -229,7 +241,7 @@ public class Springerproblem {
      *
      * @return
      */
-    private boolean hasSolutionEasy() {
+    private boolean hasSolutionSimple() {
         return cornerNumber >= 4;
     }
 
@@ -238,9 +250,9 @@ public class Springerproblem {
      *
      * @return
      */
-    private Set<List<Field>> getSolutions() {
-        return this.solutions;
-    }
+//    private Set<List<Field>> getSolutions() {
+//        return this.solutions;
+//    }
 
     /**
      * Used to get a desired Field, by providing Chess notation.
@@ -249,7 +261,7 @@ public class Springerproblem {
      * @param x
      * @return a Field
      */
-    private Field getField(char c, int x) {
+    private Field getFieldFromChar(char c, int x) {
         int y = Field.getNumberFromChar(c);
         y--;
         x--;

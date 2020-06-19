@@ -20,14 +20,13 @@ public class Main {
 
             }
         }
-        // TODO
+
         System.out.println("Enter the start column as char");
         char column = scanner.next().charAt(0);
         System.out.println("Enter the start row as number");
         int row = 0;
         boolean validEntry3 = false;
         while (!validEntry3) {
-
             try {
                 row = scanner.nextInt();
                 validEntry3 = true;
@@ -35,10 +34,9 @@ public class Main {
                 System.out.println("unvalid entry");
                 System.out.println("enter a valid number  ");
                 scanner.next();
-
             }
         }
-        //TODO
+
         System.out.println("Enter variant S for Simple C for Classic");
         char variant = scanner.next().charAt(0);
         String v = Character.toString(variant);

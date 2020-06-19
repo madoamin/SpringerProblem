@@ -29,32 +29,7 @@ public class Field {
         this.isCorner = false;
     }
 
-    /**
-     * Converts from char to corresponding number.
-     * a return like 1
-     * b return like 2
-     * And so on.
-     *
-     * @param c read a char to get value in numbers
-     * @return int
-     */
-    public static int getNumberFromChar(char c) {
-        switch (c) {
-            case ('a'):
-                return 1;
-            case ('b'):
-                return 2;
-            case ('c'):
-                return 3;
-            case ('d'):
-                return 4;
-            case ('e'):
-                return 5;
-            case ('f'):
-                return 6;
-        }
-        return 0;
-    }
+
 
     /**
      * Returns the x coordinate.
@@ -120,6 +95,33 @@ public class Field {
      */
     public String toString() {
         return (x+1) + "" + getCharForNumber(y);
+    }
+
+    /**
+     * Converts from char to corresponding number.
+     * a return like 1
+     * b return like 2
+     * And so on.
+     *
+     * @param c read a char to get value in numbers
+     * @return int
+     */
+    public static int getNumberFromChar(char c) {
+        switch (c) {
+            case ('a'):
+                return 1;
+            case ('b'):
+                return 2;
+            case ('c'):
+                return 3;
+            case ('d'):
+                return 4;
+            case ('e'):
+                return 5;
+            case ('f'):
+                return 6;
+        }
+        return 0;
     }
 
     /**
