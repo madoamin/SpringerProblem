@@ -8,7 +8,13 @@ public class Springerproblem {
      * The size of the playground.
      */
     private int fieldSize;
+    /**
+     * The start position field.
+     */
     private Field startPosfield;
+    /**
+     * The solution typ classic or simple.
+     */
     private int solutionType;
     /**
      * The Set of solutions, with all the possible solutions.
@@ -35,16 +41,16 @@ public class Springerproblem {
 
     /**
      * The constructor of the Springerproblem.
-     * Used to create a playground, the corresponding Fields and initialise the variables.
+     * Used to create a playground, the corresponding Fields and initialise the variables, and to choose the solution typ
      *
-     * @param fieldSize chess board size
+     * @param fieldSize      chess board size
      * @param solutionAmount how much solutions that the user want
-     * @param solutionType if the user need the all solutions or some known.
+     * @param solutionTyp    if the user need the all solutions or some known.
      */
-    public Springerproblem(int fieldSize, int solutionAmount,int solutionType) {
+    public Springerproblem(int fieldSize, int solutionAmount, int solutionTyp) {
         this.fieldSize = fieldSize;
         this.solutionAmount = solutionAmount;
-        this.solutionType = solutionType;
+        this.solutionType = solutionTyp;
 
         this.moveNumber = 0;
         this.currentPath = new ArrayList<>();
@@ -65,27 +71,27 @@ public class Springerproblem {
     /**
      * Used to start the simulation, by providing a StartField in Chess notation and the version of the problem to be solved.
      *
-     * @param column start Position in column
-     * @param row start Position in row
+     * @param column  start Position in column
+     * @param row     start Position in row
      * @param version typ of the variant
      */
     public void start(char column, int row, Version version) {
         Field startField;
-        startPosfield = getField(column, row);
-        if ((startField = this.getField(column, row)) == null) {
+        startPosfield = getFieldFromChar(column, row);
+        if ((startField = this.getFieldFromChar(column, row)) == null) {
             System.err.println("The StartField " + column + row + " doesn't exist. Please choose different.");
             System.exit(1);
         }
         if (version.equals(Version.S)) {
-            this.findWayEasy(startField);
+            this.findWaySimple(startField);
         } else if (version.equals(Version.C)) {
-            this.findWayNormal(startField);
+            this.findWayClassic(startField);
         }
-        if(solutions.size() < solutionAmount && solutionType == 1){
-          printSolutions(solutionAmount , solutionType);
+        if (solutions.size() < solutionAmount && solutionType == 1) {
+            printSolutions(solutionAmount, solutionType);
             System.exit(6);
         }
-        if (solutionType !=1) printSolutions(solutionAmount,solutionType);
+        if (solutionType != 1) printSolutions(solutionAmount, solutionType);
     }
 
     /**
@@ -93,14 +99,14 @@ public class Springerproblem {
      *
      * @param solutionAmount
      */
-    private void printSolutions(int solutionAmount , int typ) {
+    private void printSolutions(int solutionAmount, int typ) {
         System.out.println("Solutions " + solutions.size());
         if (solutionAmount > solutions.size()) {
             System.err.println("Only " + solutions.size() + " possible solutions, not " + solutionAmount + " as desired.");
         }
         int i = 1;
         for (List<Field> list : solutions) {
-            if (!(i > solutions.size()) && typ ==1 ?!(i > solutionAmount): true) {
+            if (!(i > solutions.size()) && typ == 1 ? !(i > solutionAmount) : true) {
 
                 System.out.println("Solution " + i);
                 System.out.print("\t");
@@ -122,16 +128,22 @@ public class Springerproblem {
     private List<Field> getPossibleMoves(Field field) {
         List<Field> result = new ArrayList<>();
         int relativeIndices[][] = {{-1, -2}, {1, -2}, {2, -1}, {1, 2}, {2, 1}, {-1, 2}, {-2, 1}, {-2, -1}};
-        for (int[] delta : relativeIndices) {
-            if (getField(field.getX() + delta[0], field.getY() + delta[1]) != null) {
-                if (!(getField(field.getX() + delta[0], field.getY() + delta[1]).isVisited())) {
-                    result.add(getField(field.getX() + delta[0], field.getY() + delta[1]));
+        for (int[] way : relativeIndices) {
+            if (getField(field.getX() + way[0], field.getY() + way[1]) != null) {
+                if (!(getField(field.getX() + way[0], field.getY() + way[1]).isVisited())) {
+                    result.add(getField(field.getX() + way[0], field.getY() + way[1]));
                 }
             }
         }
         return result;
     }
 
+    /**
+     * Used to get all possible moves from a position to get back to start position.
+     *
+     * @param field
+     * @return List<Field>
+     */
     private List<Field> getPossibleBack(Field field) {
         List<Field> result = new ArrayList<>();
         int relativeIndices[][] = {{-1, -2}, {1, -2}, {2, -1}, {2, 1}, {1, 2}, {-1, 2}, {-2, 1}, {-2, -1}};
@@ -150,29 +162,25 @@ public class Springerproblem {
      *
      * @param currentField
      */
-    private void findWayEasy(Field currentField) {
+    private void findWaySimple(Field currentField) {
         if (currentField.isCorner()) {
             this.cornerNumber++;
         }
         this.currentPath.add(currentField);
         currentField.markAsVisited();
-        if (this.hasSolutionEasy() && filterSulotion(this.currentPath, startPosfield)) {
+        if (this.hasSolutionSimple() && filterSulotion(this.currentPath, startPosfield)) {
             List<Field> copy = new ArrayList<>(this.currentPath);
 
-         this.solutions.add(copy);
-            if (solutions.size() == solutionAmount && solutionType == 1 ) {
-                printSolutions(solutionAmount ,solutionType);
+            this.solutions.add(copy);
+            if (solutions.size() == solutionAmount && solutionType == 1) {
+                printSolutions(solutionAmount, solutionType);
                 System.out.println("Simple variant has been used *exit code 5* ");
                 System.exit(5);
             }
-
-
-
-
         } else {
             List<Field> possibleMoves = this.getPossibleMoves(currentField);
             for (Field newField : possibleMoves) {
-                this.findWayEasy(newField);
+                this.findWaySimple(newField);
             }
         }
         if (currentField.isCorner()) {
@@ -188,17 +196,17 @@ public class Springerproblem {
      *
      * @param currentField
      */
-    private void findWayNormal(Field currentField) {
+    private void findWayClassic(Field currentField) {
         this.moveNumber++;
         this.currentPath.add(currentField);
         currentField.markAsVisited();
-        if (this.hasSolutionNormal()) {
+        if (this.hasSolutionClassic()) {
             if (filterSulotion(this.currentPath, startPosfield)) {
                 List<Field> copy = new ArrayList<>(this.currentPath);
 
                 this.solutions.add(copy);
                 if (solutions.size() == solutionAmount && solutionType == 1) {
-                    printSolutions(solutionAmount , solutionType);
+                    printSolutions(solutionAmount, solutionType);
                     System.out.println("Classic variant has been used *exit code 2* ");
                     System.exit(2);
                 }
@@ -207,7 +215,7 @@ public class Springerproblem {
         } else {
             List<Field> possibleMoves = this.getPossibleMoves(currentField);
             for (Field newField : possibleMoves) {
-                this.findWayNormal(newField);
+                this.findWayClassic(newField);
             }
         }
         this.moveNumber--;
@@ -220,8 +228,8 @@ public class Springerproblem {
      *
      * @return
      */
-    private boolean hasSolutionNormal() {
-        return moveNumber >= this.getFieldSize() * this.getFieldSize();
+    private boolean hasSolutionClassic() {
+        return moveNumber == this.getFieldSize() * this.getFieldSize();
     }
 
     /**
@@ -229,17 +237,27 @@ public class Springerproblem {
      *
      * @return
      */
-    private boolean hasSolutionEasy() {
+    private boolean hasSolutionSimple() {
         return cornerNumber >= 4;
     }
 
     /**
-     * Used to get all the solutions.
+     * Used to get Paths that only can get back to start position.
      *
-     * @return
+     * @param path the current path would be checked
+     * @param startField start position
+     *
+     * @return true wenn the path pass to get back to start position.
      */
-    private Set<List<Field>> getSolutions() {
-        return this.solutions;
+    public boolean filterSulotion(List<Field> path, Field startField) {
+        List<Field> possibleBackField = getPossibleBack(startField);
+        for (Field f : possibleBackField) {
+            int s = path.size() - 1;
+            if (path.get(s) == f) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -249,7 +267,7 @@ public class Springerproblem {
      * @param x
      * @return a Field
      */
-    private Field getField(char c, int x) {
+    private Field getFieldFromChar(char c, int x) {
         int y = Field.getNumberFromChar(c);
         y--;
         x--;
@@ -274,7 +292,6 @@ public class Springerproblem {
             return null;
         }
     }
-
     /**
      * Used to get the field size.
      *
@@ -282,16 +299,5 @@ public class Springerproblem {
      */
     private int getFieldSize() {
         return fieldSize;
-    }
-
-    public boolean filterSulotion(List<Field> path, Field startField) {
-        List<Field> possibleBackField = getPossibleBack(startField);
-        for (Field f : possibleBackField) {
-            int s = path.size() - 1;
-            if (path.get(s) == f) {
-                return true;
-            }
-        }
-        return false;
     }
 }
