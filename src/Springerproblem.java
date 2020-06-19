@@ -247,7 +247,7 @@ public class Springerproblem {
      * @param path the current path would be checked
      * @param startField start position
      *
-     * @return
+     * @return true wenn the path pass to get back to start position.
      */
     public boolean filterSulotion(List<Field> path, Field startField) {
         List<Field> possibleBackField = getPossibleBack(startField);
