@@ -4,9 +4,9 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String args[]) {
-          Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the chess board size");
-          int size = 0;
+        int size = 0;
         boolean validEntry2 = false;
         while (!validEntry2) {
 
@@ -22,9 +22,9 @@ public class Main {
         }
         // TODO
         System.out.println("Enter the start column as char");
-          char column = scanner.next().charAt(0);
+        char column = scanner.next().charAt(0);
         System.out.println("Enter the start row as number");
-          int row =0;
+        int row = 0;
         boolean validEntry3 = false;
         while (!validEntry3) {
 
@@ -40,13 +40,12 @@ public class Main {
         }
         //TODO
         System.out.println("Enter variant S for Simple C for Classic");
-          char variant = scanner.next().charAt(0);
+        char variant = scanner.next().charAt(0);
         String v = Character.toString(variant);
-          while ((v.equals("S") ||v.equals("C")) ? false:true ){
-              System.out.println("bitch u entered a false value try again mother fucker @@");
-              v=scanner.next();
-             // scanner.nextLine();
-          }
+        while ((v.equals("S") || v.equals("C")) ? false : true) {
+            System.out.println("bitch u entered a false value try again mother fucker @@");
+            v = scanner.next();
+        }
 
         System.out.println("Enter 1 to get determinate number of solutions else all solutions");
         int solutionType = 0;
@@ -65,12 +64,10 @@ public class Main {
         }
 
         int soluationAmount = 0;
-        if(solutionType == 1){
-        System.out.println("Enter the number of solution");
-           soluationAmount = scanner.nextInt();
+        if (solutionType == 1) {
+            System.out.println("Enter the number of solution");
             boolean validEntry6 = false;
             while (!validEntry6) {
-
                 try {
                     soluationAmount = scanner.nextInt();
                     validEntry6 = true;
@@ -78,14 +75,10 @@ public class Main {
                     System.out.println("unvalid entry");
                     System.out.println("enter a valid number  ");
                     scanner.next();
-
                 }
-            }}
-
-
-
-
-        Springerproblem s = new Springerproblem(size, soluationAmount,solutionType);
+            }
+        }
+        Springerproblem s = new Springerproblem(size, soluationAmount, solutionType);
         s.start(column, row, Version.valueOf(v));
     }
 }
