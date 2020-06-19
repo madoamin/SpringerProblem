@@ -43,11 +43,11 @@ public class Springerproblem {
      * The constructor of the Springerproblem.
      * Used to create a playground, the corresponding Fields and initialise the variables, and to choose the solution typ
      *
-     * @param fieldSize chess board size
+     * @param fieldSize      chess board size
      * @param solutionAmount how much solutions that the user want
-     * @param solutionTyp if the user need the all solutions or some known.
+     * @param solutionTyp    if the user need the all solutions or some known.
      */
-    public Springerproblem(int fieldSize, int solutionAmount,int solutionTyp) {
+    public Springerproblem(int fieldSize, int solutionAmount, int solutionTyp) {
         this.fieldSize = fieldSize;
         this.solutionAmount = solutionAmount;
         this.solutionType = solutionTyp;
@@ -71,8 +71,8 @@ public class Springerproblem {
     /**
      * Used to start the simulation, by providing a StartField in Chess notation and the version of the problem to be solved.
      *
-     * @param column start Position in column
-     * @param row start Position in row
+     * @param column  start Position in column
+     * @param row     start Position in row
      * @param version typ of the variant
      */
     public void start(char column, int row, Version version) {
@@ -83,15 +83,15 @@ public class Springerproblem {
             System.exit(1);
         }
         if (version.equals(Version.S)) {
-            this.findWayEasy(startField);
+            this.findWaySimple(startField);
         } else if (version.equals(Version.C)) {
             this.findWayClassic(startField);
         }
-        if(solutions.size() < solutionAmount && solutionType == 1){
-          printSolutions(solutionAmount , solutionType);
+        if (solutions.size() < solutionAmount && solutionType == 1) {
+            printSolutions(solutionAmount, solutionType);
             System.exit(6);
         }
-        if (solutionType !=1) printSolutions(solutionAmount,solutionType);
+        if (solutionType != 1) printSolutions(solutionAmount, solutionType);
     }
 
     /**
@@ -99,14 +99,14 @@ public class Springerproblem {
      *
      * @param solutionAmount
      */
-    private void printSolutions(int solutionAmount , int typ) {
+    private void printSolutions(int solutionAmount, int typ) {
         System.out.println("Solutions " + solutions.size());
         if (solutionAmount > solutions.size()) {
             System.err.println("Only " + solutions.size() + " possible solutions, not " + solutionAmount + " as desired.");
         }
         int i = 1;
         for (List<Field> list : solutions) {
-            if (!(i > solutions.size()) && typ ==1 ?!(i > solutionAmount): true) {
+            if (!(i > solutions.size()) && typ == 1 ? !(i > solutionAmount) : true) {
 
                 System.out.println("Solution " + i);
                 System.out.print("\t");
@@ -162,7 +162,7 @@ public class Springerproblem {
      *
      * @param currentField
      */
-    private void findWayEasy(Field currentField) {
+    private void findWaySimple(Field currentField) {
         if (currentField.isCorner()) {
             this.cornerNumber++;
         }
@@ -171,20 +171,16 @@ public class Springerproblem {
         if (this.hasSolutionSimple() && filterSulotion(this.currentPath, startPosfield)) {
             List<Field> copy = new ArrayList<>(this.currentPath);
 
-         this.solutions.add(copy);
-            if (solutions.size() == solutionAmount && solutionType == 1 ) {
-                printSolutions(solutionAmount ,solutionType);
+            this.solutions.add(copy);
+            if (solutions.size() == solutionAmount && solutionType == 1) {
+                printSolutions(solutionAmount, solutionType);
                 System.out.println("Simple variant has been used *exit code 5* ");
                 System.exit(5);
             }
-
-
-
-
         } else {
             List<Field> possibleMoves = this.getPossibleMoves(currentField);
             for (Field newField : possibleMoves) {
-                this.findWayEasy(newField);
+                this.findWaySimple(newField);
             }
         }
         if (currentField.isCorner()) {
@@ -210,7 +206,7 @@ public class Springerproblem {
 
                 this.solutions.add(copy);
                 if (solutions.size() == solutionAmount && solutionType == 1) {
-                    printSolutions(solutionAmount , solutionType);
+                    printSolutions(solutionAmount, solutionType);
                     System.out.println("Classic variant has been used *exit code 2* ");
                     System.exit(2);
                 }
@@ -246,13 +242,23 @@ public class Springerproblem {
     }
 
     /**
-     * Used to get all the solutions.
+     * Used to get Paths that only can get back to start position.
+     *
+     * @param path the current path would be checked
+     * @param startField start position
      *
      * @return
      */
-//    private Set<List<Field>> getSolutions() {
-//        return this.solutions;
-//    }
+    public boolean filterSulotion(List<Field> path, Field startField) {
+        List<Field> possibleBackField = getPossibleBack(startField);
+        for (Field f : possibleBackField) {
+            int s = path.size() - 1;
+            if (path.get(s) == f) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Used to get a desired Field, by providing Chess notation.
@@ -286,7 +292,6 @@ public class Springerproblem {
             return null;
         }
     }
-
     /**
      * Used to get the field size.
      *
@@ -294,16 +299,5 @@ public class Springerproblem {
      */
     private int getFieldSize() {
         return fieldSize;
-    }
-
-    public boolean filterSulotion(List<Field> path, Field startField) {
-        List<Field> possibleBackField = getPossibleBack(startField);
-        for (Field f : possibleBackField) {
-            int s = path.size() - 1;
-            if (path.get(s) == f) {
-                return true;
-            }
-        }
-        return false;
     }
 }
